@@ -87,7 +87,6 @@ class _UploadZoneState extends State<UploadZone> {
                 _FormatChip('CSV'),
                 _FormatChip('XLSX'),
                 _FormatChip('JSON'),
-                _FormatChip('TXT'),
               ],
             ),
           ],
@@ -100,7 +99,7 @@ class _UploadZoneState extends State<UploadZone> {
     if (widget.isDisabled) return;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['csv', 'xlsx', 'json', 'txt'],
+      allowedExtensions: ['csv', 'xlsx', 'json'],
       withData: true,
     );
     if (result != null && result.files.isNotEmpty) {

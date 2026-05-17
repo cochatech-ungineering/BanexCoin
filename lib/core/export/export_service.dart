@@ -8,13 +8,9 @@ import 'save_file_stub.dart'
     if (dart.library.html) 'save_file_web.dart'
     if (dart.library.io) 'save_file_desktop.dart';
 
-enum ExportFormat { csv, xlsx, json, txt }
+enum ExportFormat { csv, xlsx, json }
 
 class ExportService {
-  /// [headers] — column names.
-  /// [rows]    — each row is a list of values (String, num, bool, etc.).
-  /// [jsonRows] — optional pre-serialised objects for JSON export;
-  ///              falls back to [rows] when not provided.
   static Future<String> export({
     required String filename,
     required ExportFormat format,
@@ -32,8 +28,6 @@ class ExportService {
         bytes = _buildXlsxBytes(headers, rows);
       case ExportFormat.json:
         bytes = _buildJsonBytes(jsonRows ?? _rowsToMaps(headers, rows));
-      case ExportFormat.txt:
-        bytes = _buildTxtBytes(headers, rows);
     }
 
     await saveFile(fullFilename, bytes);
@@ -50,17 +44,6 @@ class ExportService {
 
   static Uint8List _buildJsonBytes(List<Map<String, dynamic>> data) {
     return Uint8List.fromList(utf8.encode(jsonEncode(data)));
-  }
-
-  static Uint8List _buildTxtBytes(
-    List<String> headers,
-    List<List<dynamic>> rows,
-  ) {
-    final buffer = StringBuffer()..writeln(headers.join('\t'));
-    for (final row in rows) {
-      buffer.writeln(row.join('\t'));
-    }
-    return Uint8List.fromList(utf8.encode(buffer.toString()));
   }
 
   static Uint8List _buildXlsxBytes(

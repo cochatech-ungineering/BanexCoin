@@ -37,57 +37,7 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<IngestaBloc, IngestaState>(
-      listener: (context, state) {
-        if (state is IngestaProcessing) {
-          _startAnimation();
-        } else {
-          _stopAnimation();
-        }
-
-        if (state is IngestaFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
-
-        if (state is IngestaSuccess && state.lastExportedFilename != null) {
-          final filename = state.lastExportedFilename!;
-          final isError = filename.startsWith('ERROR:');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    isError ? Icons.error_outline : Icons.check_circle_outline,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      isError ? filename : 'Guardado: $filename',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: isError ? AppColors.error : AppColors.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              duration: const Duration(seconds: 4),
-            ),
-          );
-        }
-      },
+      listener: _onStateChange,
       builder: (context, state) {
         final isProcessing = state is IngestaProcessing;
         final isResults = state is IngestaSuccess;
@@ -114,55 +64,57 @@ class _AdminScreenState extends State<AdminScreen> {
             ],
           ),
           body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- PRE-INGESTA: Config + Upload ---
-                  if (!isResults) ...[
-                    Text(
-                      'Procesa reportes mensuales de transacciones QR y calcula reintegros por nivel.',
-                      style: AppTextStyles.bodySecondary,
-                    ),
-                    const SizedBox(height: 24),
-                    LevelConfigPanel(
-                      levels: state.levels,
-                      tipoCambio: state.tipoCambio,
-                    ),
-                    const SizedBox(height: 24),
-                    UploadZone(
-                      onFilePicked: (file) => context.read<IngestaBloc>().add(
-                        IngestaFilePickedEvent(file),
-                      ),
-                      isDisabled: isProcessing,
-                    ),
-                  ],
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!isResults) ...[
+                        Text(
+                          'Procesa reportes mensuales y calcula reintegros por nivel.',
+                          style: AppTextStyles.bodySecondary,
+                        ),
+                        const SizedBox(height: 20),
+                        LevelConfigPanel(
+                          levels: state.levels,
+                          tipoCambio: state.tipoCambio,
+                        ),
+                        const SizedBox(height: 20),
+                        UploadZone(
+                          onFilePicked: (file) => context.read<IngestaBloc>().add(
+                            IngestaFilePickedEvent(file),
+                          ),
+                          isDisabled: isProcessing,
+                        ),
+                      ],
 
-                  if (isProcessing) ...[
-                    const SizedBox(height: 16),
-                    ProcessingOverlay(
-                      progress: _progress,
-                      stageLabel: _stageLabel,
-                      fileName: state.fileName,
-                    ),
-                  ],
+                      if (isProcessing) ...[
+                        const SizedBox(height: 16),
+                        ProcessingOverlay(
+                          progress: _progress,
+                          stageLabel: _stageLabel,
+                          fileName: state.fileName,
+                        ),
+                      ],
 
-                  // --- POST-INGESTA: Export (prominent) + Preview table ---
-                  if (isResults) ...[
-                    _buildSuccessBanner(state),
-                    const SizedBox(height: 20),
-                    ExportRow(
-                      results: state.results,
-                      exportingFormat: state.exportingFormat,
-                      exportingBanexTransfer: state.exportingBanexTransfer,
-                    ),
-                    const SizedBox(height: 20),
-                    ResultsTable(results: state.results, period: state.month),
-                  ],
+                      if (isResults) ...[
+                        _buildSuccessBanner(state),
+                        const SizedBox(height: 20),
+                        ExportRow(
+                          results: state.results,
+                          exportingFormat: state.exportingFormat,
+                        ),
+                        const SizedBox(height: 20),
+                        ResultsTable(results: state.results, period: state.month),
+                      ],
 
-                  const SizedBox(height: 40),
-                ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -177,35 +129,73 @@ class _AdminScreenState extends State<AdminScreen> {
     super.dispose();
   }
 
+  void _onStateChange(BuildContext context, IngestaState state) {
+    if (state is IngestaProcessing) {
+      _startAnimation();
+    } else {
+      _stopAnimation();
+    }
+
+    if (state is IngestaFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
+
+    if (state is IngestaSuccess && state.lastExportedFilename != null) {
+      final filename = state.lastExportedFilename!;
+      final isError = filename.startsWith('ERROR:');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(
+                isError ? Icons.error_outline : Icons.check_circle_outline,
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  isError ? filename : 'Guardado: $filename',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: isError ? AppColors.error : AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   Widget _buildSuccessBanner(IngestaSuccess state) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.1),
+        color: AppColors.success.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.success.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: AppColors.success, size: 24),
+          const Icon(Icons.check_circle, color: AppColors.success, size: 22),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Procesamiento completado',
-                  style: AppTextStyles.heading3.copyWith(
-                    color: AppColors.success,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${state.results.length} registros procesados correctamente',
-                  style: AppTextStyles.bodySecondary,
-                ),
-              ],
+            child: Text(
+              '${state.results.length} registros procesados',
+              style: AppTextStyles.bodyPrimary.copyWith(
+                color: AppColors.success,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

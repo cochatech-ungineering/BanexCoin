@@ -47,7 +47,7 @@ class ProcessingOverlay extends StatelessWidget {
               Text(
                 '$pct%',
                 style: AppTextStyles.heading3.copyWith(
-                  color: AppColors.primaryOrange,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
@@ -57,10 +57,10 @@ class ProcessingOverlay extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 8,
+              minHeight: 6,
               backgroundColor: AppColors.surfaceHighlight,
               valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.primaryOrange,
+                AppColors.textPrimary,
               ),
             ),
           ),

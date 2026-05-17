@@ -35,8 +35,8 @@ final ThemeData appTheme = ThemeData(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.textPrimary,
+      backgroundColor: AppColors.textPrimary,
+      foregroundColor: AppColors.background,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
@@ -66,7 +66,7 @@ final ThemeData appTheme = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: const BorderSide(color: AppColors.primary),
+      borderSide: const BorderSide(color: AppColors.textPrimary),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
   ),

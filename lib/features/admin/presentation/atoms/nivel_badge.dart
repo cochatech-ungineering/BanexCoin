@@ -5,9 +5,9 @@ import 'colored_badge.dart';
 
 class NivelBadge extends StatelessWidget {
   static const _colors = {
-    1: Color(0xFF00D2D3), // Teal
-    2: Color(0xFF6C5CE7), // Purple
-    3: Color(0xFF27AE60), // Green
+    1: Color(0xFF00D2D3),
+    2: Color(0xFFB2BEC3),
+    3: Color(0xFF00B894),
   };
 
   final int index;

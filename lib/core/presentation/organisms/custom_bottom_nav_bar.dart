@@ -85,7 +85,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 width: 32,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: AppColors.qrOrange,
+                  color: AppColors.textPrimary,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

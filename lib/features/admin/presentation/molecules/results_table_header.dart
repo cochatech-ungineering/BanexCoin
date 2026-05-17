@@ -8,38 +8,25 @@ import '../utils/period_formatter.dart';
 class ResultsTableHeader extends StatelessWidget {
   final int userCount;
   final DateTime? period;
-  final String subtitle;
 
   const ResultsTableHeader({
     super.key,
     required this.userCount,
     this.period,
-    this.subtitle = 'Resultados del período',
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ColoredBadge(
-          label: '$userCount usuarios',
-          accentColor: AppColors.primary,
-        ),
-        const SizedBox(width: 10),
-        if (period != null) ...[
+        Text('Vista previa', style: AppTextStyles.heading3),
+        const Spacer(),
+        if (period != null)
           ColoredBadge(
-            label: 'Período: ${formatAdminPeriod(period!)}',
-            accentColor: AppColors.accentPurple,
+            label: formatAdminPeriod(period!),
+            accentColor: AppColors.textSecondary,
+            compact: true,
           ),
-          const SizedBox(width: 10),
-        ],
-        Expanded(
-          child: Text(
-            subtitle,
-            style: AppTextStyles.bodySecondary,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
       ],
     );
   }

@@ -135,7 +135,7 @@ class IngestaResultsDataTable extends StatelessWidget {
           Text(
             '${(r.porcentajeReintegro * 100).toStringAsFixed(1)}%',
             style: AppTextStyles.bodyPrimary.copyWith(
-              color: AppColors.primary,
+              color: AppColors.accentTeal,
             ),
           ),
         ),

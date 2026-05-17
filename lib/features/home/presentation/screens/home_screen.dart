@@ -48,87 +48,92 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const BalanceHeader(balance: '0.0000'),
-              const SizedBox(height: 24),
-              const PromoBannerCard(),
-              const SizedBox(height: 24),
-              Text('Acciones rápidas', style: AppTextStyles.heading3),
-              const SizedBox(height: 14),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 4,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 0.72,
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  QuickActionCard(
-                    title: 'Pago de\nServicio',
-                    icon: Icons.payments_outlined,
-                    onTap: () {},
-                    isDisabled: true,
-                    ribbonText: 'Pronto',
-                  ),
-                  QuickActionCard(
-                    title: 'Enviar a\nBilletera',
-                    icon: Icons.north_east_rounded,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Comprar\nUSDT',
-                    icon: Icons.currency_exchange_outlined,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Pagar con\nQR',
-                    icon: Icons.qr_code_scanner_rounded,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Enviar\nBanex...',
-                    icon: Icons.send_outlined,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Recibir de\nBilletera',
-                    icon: Icons.south_west_rounded,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Comprar con\nTarjeta',
-                    icon: Icons.credit_card_outlined,
-                    onTap: () {},
-                  ),
-                  QuickActionCard(
-                    title: 'Cobrar con\nQR',
-                    icon: Icons.qr_code_rounded,
-                    onTap: () {},
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Actividad reciente', style: AppTextStyles.heading3),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Ver todo',
-                      style: AppTextStyles.label.copyWith(
-                        color: AppColors.primary,
+                  const BalanceHeader(balance: '0.0000'),
+                  const SizedBox(height: 24),
+                  const PromoBannerCard(),
+                  const SizedBox(height: 24),
+                  Text('Acciones rápidas', style: AppTextStyles.heading3),
+                  const SizedBox(height: 14),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 0.72,
+                    children: [
+                      QuickActionCard(
+                        title: 'Pago de\nServicio',
+                        icon: Icons.payments_outlined,
+                        onTap: () {},
+                        isDisabled: true,
+                        ribbonText: 'Pronto',
                       ),
-                    ),
+                      QuickActionCard(
+                        title: 'Enviar a\nBilletera',
+                        icon: Icons.north_east_rounded,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Comprar\nUSDT',
+                        icon: Icons.currency_exchange_outlined,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Pagar con\nQR',
+                        icon: Icons.qr_code_scanner_rounded,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Enviar\nBanex...',
+                        icon: Icons.send_outlined,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Recibir de\nBilletera',
+                        icon: Icons.south_west_rounded,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Comprar con\nTarjeta',
+                        icon: Icons.credit_card_outlined,
+                        onTap: () {},
+                      ),
+                      QuickActionCard(
+                        title: 'Cobrar con\nQR',
+                        icon: Icons.qr_code_rounded,
+                        onTap: () {},
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Actividad reciente', style: AppTextStyles.heading3),
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          'Ver todo',
+                          style: AppTextStyles.label.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 100),
                 ],
               ),
-              const SizedBox(height: 100),
-            ],
+            ),
           ),
         ),
         bottomNavigationBar: const CustomBottomNavBar(),
