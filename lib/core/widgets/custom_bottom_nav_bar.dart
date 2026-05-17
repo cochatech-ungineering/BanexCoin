@@ -47,18 +47,19 @@ class CustomBottomNavBar extends StatelessWidget {
                   onTap: () {
                     /* QR Action */
                   },
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                      gradient: AppColors.orangeGradient,
-                      shape: BoxShape
-                          .circle, // Note: Use a Hexagon CustomClipper for an exact match
-                    ),
-                    child: const Icon(
-                      Icons.qr_code_scanner,
-                      color: Colors.white,
-                      size: 28,
+                  child: ClipPath(
+                    clipper: _HexagonClipper(),
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.orangeGradient,
+                      ),
+                      child: const Icon(
+                        Icons.qr_code_scanner,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
@@ -81,18 +82,57 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget _buildNavItem(IconData icon, String label, bool isActive) {
     final color = isActive ? AppColors.textPrimary : AppColors.textSecondary;
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.label.copyWith(color: color, fontSize: 11),
+          if (isActive)
+            Positioned(
+              top: 0,
+              child: Container(
+                width: 20,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryOrange,
+                  borderRadius: BorderRadius.circular(1.5),
+                ),
+              ),
+            ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTextStyles.label.copyWith(color: color, fontSize: 11),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
+}
+
+class _HexagonClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    final width = size.width;
+    final height = size.height;
+    // Pointy-topped hexagon
+    path.moveTo(width / 2, 0);
+    path.lineTo(width, height * 0.25);
+    path.lineTo(width, height * 0.75);
+    path.lineTo(width / 2, height);
+    path.lineTo(0, height * 0.75);
+    path.lineTo(0, height * 0.25);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

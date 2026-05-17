@@ -217,25 +217,25 @@ class _ErrorBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.shade900.withValues(alpha: 0.3),
+        color: AppColors.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade700.withValues(alpha: 0.5)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.error_outline, color: Colors.red.shade400, size: 20),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
               style: AppTextStyles.bodySecondary.copyWith(
-                color: Colors.red.shade300,
+                color: AppColors.error,
               ),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.close, size: 16, color: Colors.red.shade400),
+            icon: const Icon(Icons.close, size: 16, color: AppColors.error),
             onPressed: onDismiss,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

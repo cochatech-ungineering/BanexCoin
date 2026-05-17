@@ -208,9 +208,11 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      Text(
-                        'Tipo de cambio (Bs/USDT):',
-                        style: AppTextStyles.bodySecondary,
+                      Expanded(
+                        child: Text(
+                          'Tipo de cambio (Bs/USDT):',
+                          style: AppTextStyles.bodySecondary,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       SizedBox(
@@ -280,7 +282,7 @@ class _NivelBadgeSmall extends StatelessWidget {
   static const _colors = {
     1: AppColors.primaryOrange,
     2: AppColors.accentPurple,
-    3: Color(0xFF2ECC71),
+    3: AppColors.success,
   };
   final int index;
 

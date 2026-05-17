@@ -18,7 +18,7 @@ class _NivelBadge extends StatelessWidget {
   static const _colors = {
     1: AppColors.primaryOrange,
     2: AppColors.accentPurple,
-    3: Color(0xFF2ECC71),
+    3: AppColors.success,
   };
   final int index;
 
@@ -110,10 +110,12 @@ class _ResultsTableState extends State<ResultsTable> {
               ),
               const SizedBox(width: 10),
             ],
-            Text(
-              'Resultados del período',
-              style: AppTextStyles.bodySecondary,
-              overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Text(
+                'Resultados del período',
+                style: AppTextStyles.bodySecondary,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -225,7 +227,7 @@ class _ResultsTableState extends State<ResultsTable> {
                         Text(
                           r.reintegroUsdt.toStringAsFixed(4),
                           style: AppTextStyles.bodyPrimary.copyWith(
-                            color: const Color(0xFF2ECC71),
+                            color: AppColors.success,
                           ),
                         ),
                       ),
@@ -233,7 +235,7 @@ class _ResultsTableState extends State<ResultsTable> {
                         Text(
                           r.reintegroBs.toStringAsFixed(2),
                           style: AppTextStyles.bodyPrimary.copyWith(
-                            color: const Color(0xFF2ECC71),
+                            color: AppColors.success,
                           ),
                         ),
                       ),

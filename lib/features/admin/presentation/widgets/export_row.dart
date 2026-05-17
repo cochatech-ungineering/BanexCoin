@@ -122,19 +122,37 @@ class _ExportRowState extends State<ExportRow> {
           const Divider(color: AppColors.borderColor, height: 1),
           const SizedBox(height: 16),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.send_outlined,
-                  size: 16, color: AppColors.accentPurple),
-              const SizedBox(width: 8),
-              Text(
-                'Exportar para BanexTransfer',
-                style: AppTextStyles.label
-                    .copyWith(color: AppColors.accentPurple),
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(
+                  Icons.send_outlined,
+                  size: 16,
+                  color: AppColors.accentPurple,
+                ),
               ),
-              const SizedBox(width: 6),
-              Text('(pagos masivos USDT)',
-                  style: AppTextStyles.label
-                      .copyWith(color: AppColors.textSecondary)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Exportar para BanexTransfer ',
+                        style: AppTextStyles.label.copyWith(
+                          color: AppColors.accentPurple,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '(pagos masivos USDT)',
+                        style: AppTextStyles.label.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -149,17 +167,21 @@ class _ExportRowState extends State<ExportRow> {
                       color: AppColors.accentPurple,
                     ),
                   )
-                : const Icon(Icons.send_outlined,
-                    size: 16, color: AppColors.accentPurple),
+                : const Icon(
+                    Icons.send_outlined,
+                    size: 16,
+                    color: AppColors.accentPurple,
+                  ),
             label: const Text('Generar archivo BanexTransfer'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.accentPurple,
               side: BorderSide(
-                  color: AppColors.accentPurple.withValues(alpha: 0.5)),
+                color: AppColors.accentPurple.withValues(alpha: 0.5),
+              ),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               textStyle: AppTextStyles.bodyPrimary,
             ),
           ),
@@ -171,16 +193,18 @@ class _ExportRowState extends State<ExportRow> {
   Future<void> _exportBanexTransfer() async {
     setState(() => _exportingBanexTransfer = true);
     try {
-      final filename =
-          await AdminExportService.exportBanexTransfer(widget.results);
+      final filename = await AdminExportService.exportBanexTransfer(
+        widget.results,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Exportado: $filename'),
             backgroundColor: AppColors.surfaceHighlight,
             behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -189,7 +213,7 @@ class _ExportRowState extends State<ExportRow> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al exportar: $e'),
-            backgroundColor: Colors.red.shade800,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -210,7 +234,10 @@ class _ExportRowState extends State<ExportRow> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Exportado: $filename'),
+            content: Text(
+              'Exportado: $filename',
+              style: AppTextStyles.bodyPrimary,
+            ),
             backgroundColor: AppColors.surfaceHighlight,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -224,7 +251,7 @@ class _ExportRowState extends State<ExportRow> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al exportar: $e'),
-            backgroundColor: Colors.red.shade800,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );

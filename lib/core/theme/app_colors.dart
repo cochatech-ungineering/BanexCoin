@@ -27,6 +27,11 @@ class AppColors {
   ); // e.g., USDT badge background
   static const Color borderColor = Color(0xFF2A2A38); // Subtle borders on cards
 
+  // Status & Inputs
+  static const Color success = Color(0xFF2ECC71);
+  static const Color error = Color(0xFFE74C3C);
+  static const Color inputFill = Color(0xFF252533);
+
   // Gradients
   static const LinearGradient orangeGradient = LinearGradient(
     colors: [Color(0xFFFF9255), Color(0xFFFF622A)],
