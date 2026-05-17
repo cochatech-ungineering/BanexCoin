@@ -9,37 +9,33 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // We use a Stack to allow the central FAB to overlap the top edge
       height: 90,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomCenter,
         children: [
-          // Background Bar
-          Container(
-            height: 70,
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+          // Background Bar with Hump
+          CustomPaint(
+            size: const Size(double.infinity, 70),
+            painter: _NavBarPainter(color: AppColors.surface),
+            child: SizedBox(
+              height: 70,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(Icons.home_filled, 'Inicio', true),
+                  _buildNavItem(Icons.arrow_downward, 'Recibir', false),
+                  const SizedBox(width: 70), // Spacer for the FAB
+                  _buildNavItem(Icons.arrow_upward, 'Enviar', false),
+                  _buildNavItem(Icons.account_balance_wallet, 'Billetera', false),
+                ],
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildNavItem(Icons.home_filled, 'Inicio', true),
-                _buildNavItem(Icons.arrow_downward, 'Recibir', false),
-                const SizedBox(width: 70), // Spacer for the FAB
-                _buildNavItem(Icons.arrow_upward, 'Enviar', false),
-                _buildNavItem(Icons.account_balance_wallet, 'Billetera', false),
-              ],
             ),
           ),
 
           // Floating Central Button ("Operar con QR")
           Positioned(
-            top: -10, // Overlap the top
+            top: -15, // Raised above the hump
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -48,22 +44,22 @@ class CustomBottomNavBar extends StatelessWidget {
                     /* QR Action */
                   },
                   child: ClipPath(
-                    clipper: _HexagonClipper(),
+                    clipper: const _RoundedHexagonClipper(),
                     child: Container(
-                      width: 60,
-                      height: 60,
+                      width: 64,
+                      height: 64,
                       decoration: const BoxDecoration(
                         gradient: AppColors.orangeGradient,
                       ),
                       child: const Icon(
                         Icons.qr_code_scanner,
                         color: Colors.white,
-                        size: 28,
+                        size: 30,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   'Operar con QR',
                   style: AppTextStyles.label.copyWith(
@@ -86,18 +82,43 @@ class CustomBottomNavBar extends StatelessWidget {
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
+          // Color shading (glow) for active item
           if (isActive)
             Positioned(
-              top: 0,
+              top: 10,
               child: Container(
-                width: 20,
-                height: 3,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryOrange,
-                  borderRadius: BorderRadius.circular(1.5),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryOrange.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      spreadRadius: 10,
+                    ),
+                  ],
                 ),
               ),
             ),
+          
+          // Orange top indicator line
+          if (isActive)
+            Positioned(
+              top: -0.5, // Snap perfectly to the top of the bar
+              child: Container(
+                width: 36, // Made it wider
+                height: 4,  // Made it slightly thicker for visibility
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryOrange,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(2),
+                    bottomRight: Radius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+            
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -116,19 +137,98 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 }
 
-class _HexagonClipper extends CustomClipper<Path> {
+class _NavBarPainter extends CustomPainter {
+  final Color color;
+
+  _NavBarPainter({required this.color});
+
   @override
-  Path getClip(Size size) {
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
     final path = Path();
     final width = size.width;
     final height = size.height;
-    // Pointy-topped hexagon
-    path.moveTo(width / 2, 0);
-    path.lineTo(width, height * 0.25);
-    path.lineTo(width, height * 0.75);
-    path.lineTo(width / 2, height);
-    path.lineTo(0, height * 0.75);
-    path.lineTo(0, height * 0.25);
+
+    // Start at top left
+    path.moveTo(0, 24);
+    path.quadraticBezierTo(0, 0, 24, 0);
+
+    // Draw the hump in the middle
+    final center = width / 2;
+    path.lineTo(center - 50, 0);
+    // Left slope
+    path.quadraticBezierTo(center - 30, 0, center - 20, -10);
+    // Top flat of hump
+    path.lineTo(center + 20, -10);
+    // Right slope
+    path.quadraticBezierTo(center + 30, 0, center + 50, 0);
+
+    // Continue to top right
+    path.lineTo(width - 24, 0);
+    path.quadraticBezierTo(width, 0, width, 24);
+    
+    // Bottom edge
+    path.lineTo(width, height);
+    path.lineTo(0, height);
+    path.close();
+
+    // Subtle top border/glow effect for fidelity
+    final borderPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.05)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+
+    canvas.drawPath(path, paint);
+    canvas.drawPath(path, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _RoundedHexagonClipper extends CustomClipper<Path> {
+  const _RoundedHexagonClipper();
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    final w = size.width;
+    final h = size.height;
+    const r = 8.0; // Corner radius
+
+    // Define the 6 points of the point-up hexagon
+    // P0: Top center
+    // P1: Top right
+    // P2: Bottom right
+    // P3: Bottom center
+    // P4: Bottom left
+    // P5: Top left
+    
+    // We will draw arcs at each point
+    path.moveTo(w / 2 - r, 0);
+    path.quadraticBezierTo(w / 2, 0, w / 2 + r * 0.8, r * 0.5);
+    
+    path.lineTo(w - r, h * 0.25);
+    path.quadraticBezierTo(w, h * 0.25 + r * 0.5, w, h * 0.25 + r * 1.5);
+    
+    path.lineTo(w, h * 0.75 - r * 1.5);
+    path.quadraticBezierTo(w, h * 0.75 - r * 0.5, w - r, h * 0.75);
+    
+    path.lineTo(w / 2 + r * 0.8, h - r * 0.5);
+    path.quadraticBezierTo(w / 2, h, w / 2 - r * 0.8, h - r * 0.5);
+    
+    path.lineTo(r, h * 0.75);
+    path.quadraticBezierTo(0, h * 0.75 - r * 0.5, 0, h * 0.75 - r * 1.5);
+    
+    path.lineTo(0, h * 0.25 + r * 1.5);
+    path.quadraticBezierTo(0, h * 0.25 + r * 0.5, r, h * 0.25);
+    
+    path.lineTo(w / 2 - r * 0.8, r * 0.5);
+    path.quadraticBezierTo(w / 2, 0, w / 2 + r * 0.8, r * 0.5); // Close with arc
+    
     path.close();
     return path;
   }
