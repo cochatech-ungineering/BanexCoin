@@ -85,6 +85,7 @@ class _UploadZoneState extends State<UploadZone> {
               alignment: WrapAlignment.center,
               children: const [
                 _FormatChip('CSV'),
+                _FormatChip('XLS'),
                 _FormatChip('XLSX'),
                 _FormatChip('JSON'),
                 _FormatChip('TXT'),
@@ -100,7 +101,7 @@ class _UploadZoneState extends State<UploadZone> {
     if (widget.isDisabled) return;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['csv', 'xlsx', 'json', 'txt'],
+      allowedExtensions: ['csv', 'xls', 'xlsx', 'json', 'txt'],
       withData: true,
     );
     if (result != null && result.files.isNotEmpty) {

@@ -8,6 +8,7 @@ import 'core/widgets/custom_bottom_nav_bar.dart';
 import 'core/widgets/promo_banner_card.dart';
 import 'core/widgets/quick_action_card.dart';
 import 'features/admin/presentation/admin_screen.dart';
+import 'features/home/presentation/widgets/recent_cashback_section.dart';
 
 void main() {
   runApp(const MainApp());
@@ -119,15 +120,21 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Actividad reciente',
+                  'Cashback reciente',
                   style: AppTextStyles.heading2,
                 ),
                 TextButton(
-                  onPressed: () {},
-                  child: Text('Ver más →', style: AppTextStyles.bodySecondary),
-                )
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AdminScreen()),
+                    );
+                  },
+                  child: Text('Admin →', style: AppTextStyles.bodySecondary),
+                ),
               ],
             ),
+            const SizedBox(height: 12),
+            const RecentCashbackSection(),
             const SizedBox(height: 100), // Space for bottom nav
           ],
         ),
