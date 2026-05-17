@@ -35,12 +35,19 @@ class HomeScreen extends StatelessWidget {
           title: const Text('Inicio'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.headset_mic_outlined, size: 22),
-              onPressed: () {},
+              icon: const Icon(Icons.fact_check_outlined, size: 22),
+              tooltip: 'Aprobación CashBack',
+              onPressed: () => context.go('/approval'),
             ),
             IconButton(
-              icon: const Icon(Icons.receipt_long_outlined, size: 22),
-              onPressed: () {},
+              icon: const Icon(Icons.insights_rounded, size: 22),
+              tooltip: 'Rentabilidad',
+              onPressed: () => context.go('/profitability'),
+            ),
+            IconButton(
+              icon: const Icon(Icons.shield_outlined, size: 22),
+              tooltip: 'Detección de Fraude',
+              onPressed: () => context.go('/fraud'),
             ),
             IconButton(
               icon: const Icon(Icons.admin_panel_settings_outlined, size: 22),
@@ -77,9 +84,9 @@ class HomeScreen extends StatelessWidget {
                         onTap: () => context.go('/cashback'),
                       ),
                       QuickActionCard(
-                        title: 'Enviar a\nBilletera',
-                        icon: Icons.north_east_rounded,
-                        onTap: () {},
+                        title: 'Fidelidad',
+                        icon: Icons.loyalty_rounded,
+                        onTap: () => context.go('/loyalty'),
                       ),
                       QuickActionCard(
                         title: 'Comprar\nUSDT',

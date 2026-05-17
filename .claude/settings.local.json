@@ -17,7 +17,9 @@
       "mcp__dart-mcp-server__stop_app",
       "mcp__dart-mcp-server__get_runtime_errors",
       "mcp__dart-mcp-server__get_widget_tree",
-      "mcp__dart-mcp-server__analyze_files"
+      "mcp__dart-mcp-server__analyze_files",
+      "Bash(mkdir -p c:/Development/Hackaton/BanexCoin/lib/features/loyalty/data/models)",
+      "Bash(mkdir -p c:/Development/Hackaton/BanexCoin/lib/features/loyalty/presentation/screens)"
     ],
     "additionalDirectories": [
       "\\tmp"
