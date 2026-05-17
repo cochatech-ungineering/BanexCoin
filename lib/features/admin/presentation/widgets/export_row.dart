@@ -58,6 +58,7 @@ class _ExportButton extends StatelessWidget {
 
 class _ExportRowState extends State<ExportRow> {
   ExportFormat? _exporting;
+  bool _exportingBanexTransfer = false;
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +118,85 @@ class _ExportRowState extends State<ExportRow> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          const Divider(color: AppColors.borderColor, height: 1),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(Icons.send_outlined,
+                  size: 16, color: AppColors.accentPurple),
+              const SizedBox(width: 8),
+              Text(
+                'Exportar para BanexTransfer',
+                style: AppTextStyles.label
+                    .copyWith(color: AppColors.accentPurple),
+              ),
+              const SizedBox(width: 6),
+              Text('(pagos masivos USDT)',
+                  style: AppTextStyles.label
+                      .copyWith(color: AppColors.textSecondary)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: _exportingBanexTransfer ? null : _exportBanexTransfer,
+            icon: _exportingBanexTransfer
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.accentPurple,
+                    ),
+                  )
+                : const Icon(Icons.send_outlined,
+                    size: 16, color: AppColors.accentPurple),
+            label: const Text('Generar archivo BanexTransfer'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.accentPurple,
+              side: BorderSide(
+                  color: AppColors.accentPurple.withValues(alpha: 0.5)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              textStyle: AppTextStyles.bodyPrimary,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _exportBanexTransfer() async {
+    setState(() => _exportingBanexTransfer = true);
+    try {
+      final filename =
+          await AdminExportService.exportBanexTransfer(widget.results);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exportado: $filename'),
+            backgroundColor: AppColors.surfaceHighlight,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al exportar: $e'),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _exportingBanexTransfer = false);
+    }
   }
 
   Future<void> _export(ExportFormat format) async {

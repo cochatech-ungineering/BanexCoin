@@ -6,8 +6,9 @@ import '../../data/models/ingesta_result.dart';
 
 class ResultsTable extends StatefulWidget {
   final List<IngestaResult> results;
+  final DateTime? period;
 
-  const ResultsTable({super.key, required this.results});
+  const ResultsTable({super.key, required this.results, this.period});
 
   @override
   State<ResultsTable> createState() => _ResultsTableState();
@@ -42,9 +43,26 @@ class _NivelBadge extends StatelessWidget {
 }
 
 class _ResultsTableState extends State<ResultsTable> {
-  int _sortColumnIndex = 2; // total_usdt
+  // col indices: 0=Cuenta, 1=TotalUSDT, 2=TotalBs, 3=Nivel, 4=%Reintegro, 5=ReintegroUSDT, 6=ReintegroBs
+  int _sortColumnIndex = 1;
   bool _sortAscending = false;
   late List<IngestaResult> _sorted;
+
+  @override
+  void initState() {
+    super.initState();
+    _sorted = List.from(widget.results);
+    _applySort();
+  }
+
+  @override
+  void didUpdateWidget(ResultsTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.results != widget.results) {
+      _sorted = List.from(widget.results);
+      _applySort();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +88,33 @@ class _ResultsTableState extends State<ResultsTable> {
               ),
             ),
             const SizedBox(width: 10),
-            Text('Resultados del período', style: AppTextStyles.bodySecondary),
+            if (widget.period != null) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.accentPurple.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: AppColors.accentPurple.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Text(
+                  'Período: ${_formatPeriod(widget.period!)}',
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.accentPurple,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Text(
+              'Resultados del período',
+              style: AppTextStyles.bodySecondary,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
         const SizedBox(height: 14),
@@ -113,9 +157,13 @@ class _ResultsTableState extends State<ResultsTable> {
                     label: const Text('Cuenta Destino'),
                     onSort: _onSort,
                   ),
-                  DataColumn(label: const Text('Usuario'), onSort: _onSort),
                   DataColumn(
                     label: const Text('Total USDT'),
+                    numeric: true,
+                    onSort: _onSort,
+                  ),
+                  DataColumn(
+                    label: const Text('Total Bs'),
                     numeric: true,
                     onSort: _onSort,
                   ),
@@ -147,13 +195,20 @@ class _ResultsTableState extends State<ResultsTable> {
                           ),
                         ),
                       ),
-                      DataCell(Text(r.userAlias)),
                       DataCell(
                         Text(
                           r.totalConsumoUsdt.toStringAsFixed(2),
                           style: AppTextStyles.bodyPrimary.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          r.totalConsumoBs.toStringAsFixed(2),
+                          style: AppTextStyles.bodyPrimary.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -193,22 +248,6 @@ class _ResultsTableState extends State<ResultsTable> {
     );
   }
 
-  @override
-  void didUpdateWidget(ResultsTable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.results != widget.results) {
-      _sorted = List.from(widget.results);
-      _applySort();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _sorted = List.from(widget.results);
-    _applySort();
-  }
-
   void _applySort() {
     _sorted.sort((a, b) {
       final cmp = _compareByColumn(_sortColumnIndex, a, b);
@@ -221,9 +260,9 @@ class _ResultsTableState extends State<ResultsTable> {
       case 0:
         return a.accountNumber.compareTo(b.accountNumber);
       case 1:
-        return a.userAlias.compareTo(b.userAlias);
-      case 2:
         return a.totalConsumoUsdt.compareTo(b.totalConsumoUsdt);
+      case 2:
+        return a.totalConsumoBs.compareTo(b.totalConsumoBs);
       case 3:
         return a.nivelIndex.compareTo(b.nivelIndex);
       case 4:
@@ -244,4 +283,22 @@ class _ResultsTableState extends State<ResultsTable> {
       _applySort();
     });
   }
+
+  static const _months = [
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+  ];
+
+  static String _formatPeriod(DateTime d) =>
+      '${_months[d.month - 1]} ${d.year}';
 }

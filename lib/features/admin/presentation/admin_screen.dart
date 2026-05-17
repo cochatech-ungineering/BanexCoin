@@ -7,7 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../data/models/cashback_level.dart';
 import '../data/models/ingesta_result.dart';
-import '../data/services/ingesta_api_client.dart';
+import '../data/services/ingesta_processor.dart';
 import 'widgets/export_row.dart';
 import 'widgets/level_config_panel.dart';
 import 'widgets/processing_overlay.dart';
@@ -23,17 +23,18 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   static const _stages = [
-    (0.0, 'Subiendo archivo...'),
+    (0.0, 'Leyendo archivo...'),
     (0.20, 'Procesando transacciones...'),
     (0.50, 'Calculando reintegros...'),
     (0.80, 'Generando reporte...'),
   ];
+
   _Phase _phase = _Phase.idle;
   List<IngestaResult> _results = [];
+  DateTime? _processedMonth;
   double _progress = 0.0;
   String _stageLabel = '';
   String _fileName = '';
-
   String? _errorMessage;
   double _tipoCambio = 6.96;
 
@@ -66,23 +67,14 @@ class _AdminScreenState extends State<AdminScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Page title
               Text('Ingesta de Datos', style: AppTextStyles.heading2),
               const SizedBox(height: 4),
               Text(
                 'Procesa reportes mensuales de transacciones QR y calcula reintegros',
                 style: AppTextStyles.bodySecondary,
               ),
-
-              // Mock mode banner
-              if (IngestaApiClient.useMock) ...[
-                const SizedBox(height: 10),
-                const _MockBanner(),
-              ],
-
               const SizedBox(height: 24),
 
-              // Level config
               LevelConfigPanel(
                 levels: _levels,
                 tipoCambio: _tipoCambio,
@@ -92,14 +84,12 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Upload zone
               if (_phase != _Phase.results)
                 UploadZone(
                   onFilePicked: _handleFilePicked,
                   isDisabled: _phase == _Phase.processing,
                 ),
 
-              // Processing overlay
               if (_phase == _Phase.processing) ...[
                 const SizedBox(height: 16),
                 ProcessingOverlay(
@@ -109,7 +99,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ],
 
-              // Error banner
               if (_errorMessage != null) ...[
                 const SizedBox(height: 16),
                 _ErrorBanner(
@@ -118,9 +107,8 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ],
 
-              // Results
               if (_phase == _Phase.results) ...[
-                ResultsTable(results: _results),
+                ResultsTable(results: _results, period: _processedMonth),
                 const SizedBox(height: 20),
                 ExportRow(results: _results, tipoCambio: _tipoCambio),
               ],
@@ -138,25 +126,29 @@ class _AdminScreenState extends State<AdminScreen> {
       _phase = _Phase.processing;
       _fileName = file.name;
       _progress = 0.0;
-      _stageLabel = 'Subiendo archivo...';
+      _stageLabel = 'Leyendo archivo...';
       _errorMessage = null;
       _results = [];
+      _processedMonth = null;
     });
 
     try {
       final animFuture = _runProcessingAnimation();
-      final apiFuture = IngestaApiClient().processFile(
-        file: file,
-        levels: _levels,
-        tipoCambio: _tipoCambio,
+      final processFuture = Future(
+        () => IngestaProcessor.process(
+          file: file,
+          levels: _levels,
+          tipoCambio: _tipoCambio,
+        ),
       );
 
-      await Future.wait([animFuture, apiFuture]);
-      final results = await apiFuture;
+      final processed = await Future.wait([animFuture, processFuture]);
+      final ingestaResult = processed[1] as IngestaProcessorResult;
 
       if (mounted) {
         setState(() {
-          _results = results;
+          _results = ingestaResult.results;
+          _processedMonth = ingestaResult.month;
           _phase = _Phase.results;
         });
       }
@@ -174,6 +166,7 @@ class _AdminScreenState extends State<AdminScreen> {
     setState(() {
       _phase = _Phase.idle;
       _results = [];
+      _processedMonth = null;
       _progress = 0.0;
       _stageLabel = '';
       _fileName = '';
@@ -246,39 +239,6 @@ class _ErrorBanner extends StatelessWidget {
             onPressed: onDismiss,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MockBanner extends StatelessWidget {
-  const _MockBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFFF59E0B).withValues(alpha: 0.4),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.science_outlined,
-            size: 16,
-            color: Color(0xFFF59E0B),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'Modo simulación — los datos son de prueba',
-            style: AppTextStyles.label.copyWith(color: const Color(0xFFF59E0B)),
           ),
         ],
       ),
