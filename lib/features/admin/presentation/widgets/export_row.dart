@@ -1,18 +1,155 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../data/models/ingesta_result.dart';
 import '../../data/services/export_service.dart';
+import '../bloc/ingesta_bloc.dart';
+import '../bloc/ingesta_event.dart';
 
-class ExportRow extends StatefulWidget {
+class ExportRow extends StatelessWidget {
   final List<IngestaResult> results;
-  final double tipoCambio;
+  final ExportFormat? exportingFormat;
+  final bool exportingBanexTransfer;
 
-  const ExportRow({super.key, required this.results, required this.tipoCambio});
+  const ExportRow({
+    super.key,
+    required this.results,
+    required this.exportingFormat,
+    required this.exportingBanexTransfer,
+  });
 
   @override
-  State<ExportRow> createState() => _ExportRowState();
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.download_outlined,
+                size: 18,
+                color: AppColors.primaryOrange,
+              ),
+              const SizedBox(width: 8),
+              Text('Exportar resultados', style: AppTextStyles.heading3),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              _ExportButton(
+                format: ExportFormat.csv,
+                label: 'CSV',
+                icon: Icons.table_chart_outlined,
+                isLoading: exportingFormat == ExportFormat.csv,
+                onTap: () => context.read<IngestaBloc>().add(
+                  IngestaExportRequestedEvent(ExportFormat.csv),
+                ),
+              ),
+              _ExportButton(
+                format: ExportFormat.xlsx,
+                label: 'XLSX',
+                icon: Icons.grid_on_outlined,
+                isLoading: exportingFormat == ExportFormat.xlsx,
+                onTap: () => context.read<IngestaBloc>().add(
+                  IngestaExportRequestedEvent(ExportFormat.xlsx),
+                ),
+              ),
+              _ExportButton(
+                format: ExportFormat.json,
+                label: 'JSON',
+                icon: Icons.code_outlined,
+                isLoading: exportingFormat == ExportFormat.json,
+                onTap: () => context.read<IngestaBloc>().add(
+                  IngestaExportRequestedEvent(ExportFormat.json),
+                ),
+              ),
+              _ExportButton(
+                format: ExportFormat.txt,
+                label: 'TXT',
+                icon: Icons.text_snippet_outlined,
+                isLoading: exportingFormat == ExportFormat.txt,
+                onTap: () => context.read<IngestaBloc>().add(
+                  IngestaExportRequestedEvent(ExportFormat.txt),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(color: AppColors.borderColor, height: 1),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(
+                Icons.send_outlined,
+                size: 16,
+                color: AppColors.accentPurple,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Exportar para BanexTransfer',
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.accentPurple,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '(pagos masivos USDT)',
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: exportingBanexTransfer
+                ? null
+                : () => context.read<IngestaBloc>().add(
+                    const IngestaBanexTransferExportRequestedEvent(),
+                  ),
+            icon: exportingBanexTransfer
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.accentPurple,
+                    ),
+                  )
+                : const Icon(
+                    Icons.send_outlined,
+                    size: 16,
+                    color: AppColors.accentPurple,
+                  ),
+            label: const Text('Generar archivo BanexTransfer'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.accentPurple,
+              side: BorderSide(
+                color: AppColors.accentPurple.withValues(alpha: 0.5),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              textStyle: AppTextStyles.bodyPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ExportButton extends StatelessWidget {
@@ -53,211 +190,5 @@ class _ExportButton extends StatelessWidget {
         textStyle: AppTextStyles.bodyPrimary,
       ),
     );
-  }
-}
-
-class _ExportRowState extends State<ExportRow> {
-  ExportFormat? _exporting;
-  bool _exportingBanexTransfer = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.download_outlined,
-                size: 18,
-                color: AppColors.primaryOrange,
-              ),
-              const SizedBox(width: 8),
-              Text('Exportar resultados', style: AppTextStyles.heading3),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _ExportButton(
-                format: ExportFormat.csv,
-                label: 'CSV',
-                icon: Icons.table_chart_outlined,
-                isLoading: _exporting == ExportFormat.csv,
-                onTap: () => _export(ExportFormat.csv),
-              ),
-              _ExportButton(
-                format: ExportFormat.xlsx,
-                label: 'XLSX',
-                icon: Icons.grid_on_outlined,
-                isLoading: _exporting == ExportFormat.xlsx,
-                onTap: () => _export(ExportFormat.xlsx),
-              ),
-              _ExportButton(
-                format: ExportFormat.json,
-                label: 'JSON',
-                icon: Icons.code_outlined,
-                isLoading: _exporting == ExportFormat.json,
-                onTap: () => _export(ExportFormat.json),
-              ),
-              _ExportButton(
-                format: ExportFormat.txt,
-                label: 'TXT',
-                icon: Icons.text_snippet_outlined,
-                isLoading: _exporting == ExportFormat.txt,
-                onTap: () => _export(ExportFormat.txt),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(color: AppColors.borderColor, height: 1),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.send_outlined,
-                  size: 16,
-                  color: AppColors.accentPurple,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Exportar para BanexTransfer ',
-                        style: AppTextStyles.label.copyWith(
-                          color: AppColors.accentPurple,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '(pagos masivos USDT)',
-                        style: AppTextStyles.label.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton.icon(
-            onPressed: _exportingBanexTransfer ? null : _exportBanexTransfer,
-            icon: _exportingBanexTransfer
-                ? const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.accentPurple,
-                    ),
-                  )
-                : const Icon(
-                    Icons.send_outlined,
-                    size: 16,
-                    color: AppColors.accentPurple,
-                  ),
-            label: const Text('Generar archivo BanexTransfer'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.accentPurple,
-              side: BorderSide(
-                color: AppColors.accentPurple.withValues(alpha: 0.5),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              textStyle: AppTextStyles.bodyPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _exportBanexTransfer() async {
-    setState(() => _exportingBanexTransfer = true);
-    try {
-      final filename = await AdminExportService.exportBanexTransfer(
-        widget.results,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Exportado: $filename'),
-            backgroundColor: AppColors.surfaceHighlight,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al exportar: $e'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _exportingBanexTransfer = false);
-    }
-  }
-
-  Future<void> _export(ExportFormat format) async {
-    setState(() => _exporting = format);
-    try {
-      final filename = await AdminExportService.export(
-        widget.results,
-        format,
-        widget.tipoCambio,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Exportado: $filename',
-              style: AppTextStyles.bodyPrimary,
-            ),
-            backgroundColor: AppColors.surfaceHighlight,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al exportar: $e'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _exporting = null);
-    }
   }
 }

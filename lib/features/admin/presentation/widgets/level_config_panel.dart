@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../data/models/cashback_level.dart';
+import '../bloc/ingesta_bloc.dart';
+import '../bloc/ingesta_event.dart';
 
 class LevelConfigPanel extends StatefulWidget {
   final List<CashbackLevel> levels;
   final double tipoCambio;
-  final void Function(double) onTipoCambioChanged;
-  final void Function(int index, CashbackLevel updated) onLevelChanged;
 
   const LevelConfigPanel({
     super.key,
     required this.levels,
     required this.tipoCambio,
-    required this.onTipoCambioChanged,
-    required this.onLevelChanged,
   });
 
   @override
@@ -164,7 +163,9 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                                 final val = double.tryParse(v);
                                 if (val != null) {
                                   level.minUsdt = val;
-                                  widget.onLevelChanged(i, level);
+                                  context.read<IngestaBloc>().add(
+                                    IngestaLevelChangedEvent(i, level),
+                                  );
                                 }
                               },
                             ),
@@ -179,7 +180,9 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                                 final val = double.tryParse(v);
                                 if (val != null) {
                                   level.maxUsdt = val;
-                                  widget.onLevelChanged(i, level);
+                                  context.read<IngestaBloc>().add(
+                                    IngestaLevelChangedEvent(i, level),
+                                  );
                                 }
                               },
                             ),
@@ -194,7 +197,9 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                                 final val = double.tryParse(v);
                                 if (val != null) {
                                   level.porcentaje = val / 100;
-                                  widget.onLevelChanged(i, level);
+                                  context.read<IngestaBloc>().add(
+                                    IngestaLevelChangedEvent(i, level),
+                                  );
                                 }
                               },
                             ),
@@ -221,7 +226,11 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                           controller: _tcController,
                           onChanged: (v) {
                             final val = double.tryParse(v);
-                            if (val != null) widget.onTipoCambioChanged(val);
+                            if (val != null) {
+                              context.read<IngestaBloc>().add(
+                                IngestaTipoCambioChangedEvent(val),
+                              );
+                            }
                           },
                         ),
                       ),
