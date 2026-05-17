@@ -27,7 +27,11 @@ class CustomBottomNavBar extends StatelessWidget {
                   _buildNavItem(Icons.arrow_downward, 'Recibir', false),
                   const SizedBox(width: 70), // Spacer for the FAB
                   _buildNavItem(Icons.arrow_upward, 'Enviar', false),
-                  _buildNavItem(Icons.account_balance_wallet, 'Billetera', false),
+                  _buildNavItem(
+                    Icons.account_balance_wallet,
+                    'Billetera',
+                    false,
+                  ),
                 ],
               ),
             ),
@@ -94,21 +98,21 @@ class CustomBottomNavBar extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primaryOrange.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      spreadRadius: 10,
+                      blurRadius: 40,
+                      spreadRadius: 20,
                     ),
                   ],
                 ),
               ),
             ),
-          
+
           // Orange top indicator line
           if (isActive)
             Positioned(
-              top: -0.5, // Snap perfectly to the top of the bar
+              top: -12, // Snap perfectly to the top of the bar
               child: Container(
                 width: 36, // Made it wider
-                height: 4,  // Made it slightly thicker for visibility
+                height: 4, // Made it slightly thicker for visibility
                 decoration: const BoxDecoration(
                   color: AppColors.primaryOrange,
                   borderRadius: BorderRadius.only(
@@ -118,7 +122,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 ),
               ),
             ),
-            
+
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +173,7 @@ class _NavBarPainter extends CustomPainter {
     // Continue to top right
     path.lineTo(width - 24, 0);
     path.quadraticBezierTo(width, 0, width, 24);
-    
+
     // Bottom edge
     path.lineTo(width, height);
     path.lineTo(0, height);
@@ -190,45 +194,53 @@ class _NavBarPainter extends CustomPainter {
 }
 
 class _RoundedHexagonClipper extends CustomClipper<Path> {
-  const _RoundedHexagonClipper();
+  final double cornerRadius;
+
+  const _RoundedHexagonClipper({this.cornerRadius = 8.0});
 
   @override
   Path getClip(Size size) {
-    final path = Path();
     final w = size.width;
     final h = size.height;
-    const r = 8.0; // Corner radius
 
-    // Define the 6 points of the point-up hexagon
-    // P0: Top center
-    // P1: Top right
-    // P2: Bottom right
-    // P3: Bottom center
-    // P4: Bottom left
-    // P5: Top left
-    
-    // We will draw arcs at each point
-    path.moveTo(w / 2 - r, 0);
-    path.quadraticBezierTo(w / 2, 0, w / 2 + r * 0.8, r * 0.5);
-    
-    path.lineTo(w - r, h * 0.25);
-    path.quadraticBezierTo(w, h * 0.25 + r * 0.5, w, h * 0.25 + r * 1.5);
-    
-    path.lineTo(w, h * 0.75 - r * 1.5);
-    path.quadraticBezierTo(w, h * 0.75 - r * 0.5, w - r, h * 0.75);
-    
-    path.lineTo(w / 2 + r * 0.8, h - r * 0.5);
-    path.quadraticBezierTo(w / 2, h, w / 2 - r * 0.8, h - r * 0.5);
-    
-    path.lineTo(r, h * 0.75);
-    path.quadraticBezierTo(0, h * 0.75 - r * 0.5, 0, h * 0.75 - r * 1.5);
-    
-    path.lineTo(0, h * 0.25 + r * 1.5);
-    path.quadraticBezierTo(0, h * 0.25 + r * 0.5, r, h * 0.25);
-    
-    path.lineTo(w / 2 - r * 0.8, r * 0.5);
-    path.quadraticBezierTo(w / 2, 0, w / 2 + r * 0.8, r * 0.5); // Close with arc
-    
+    // 6 vertices of a point-up hexagon fitted to the bounding box
+    final vertices = [
+      Offset(w / 2, 0), // top
+      Offset(w, h / 4), // top-right
+      Offset(w, 3 * h / 4), // bottom-right
+      Offset(w / 2, h), // bottom
+      Offset(0, 3 * h / 4), // bottom-left
+      Offset(0, h / 4), // top-left
+    ];
+
+    final n = vertices.length;
+    final path = Path();
+
+    for (int i = 0; i < n; i++) {
+      final prev = vertices[(i - 1 + n) % n];
+      final curr = vertices[i];
+      final next = vertices[(i + 1) % n];
+
+      // Unit vectors from current vertex toward its two neighbors
+      final toPrev = prev - curr;
+      final toNext = next - curr;
+      final toPrevUnit = toPrev / toPrev.distance;
+      final toNextUnit = toNext / toNext.distance;
+
+      // Points on the edges, pulled back from the vertex by cornerRadius
+      final arcStart = curr + toPrevUnit * cornerRadius;
+      final arcEnd = curr + toNextUnit * cornerRadius;
+
+      if (i == 0) {
+        path.moveTo(arcStart.dx, arcStart.dy);
+      } else {
+        path.lineTo(arcStart.dx, arcStart.dy);
+      }
+
+      // Round the corner: control point is the sharp vertex itself
+      path.quadraticBezierTo(curr.dx, curr.dy, arcEnd.dx, arcEnd.dy);
+    }
+
     path.close();
     return path;
   }

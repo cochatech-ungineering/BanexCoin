@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../data/models/cashback_level.dart';
+import '../atoms/nivel_badge.dart';
 import '../bloc/ingesta_bloc.dart';
 import '../bloc/ingesta_event.dart';
 
@@ -152,7 +153,7 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                         children: [
                           Expanded(
                             flex: 2,
-                            child: _NivelBadgeSmall(level.index),
+                            child: NivelBadge(index: level.index, compact: true),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -287,31 +288,3 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
   );
 }
 
-class _NivelBadgeSmall extends StatelessWidget {
-  static const _colors = {
-    1: AppColors.primaryOrange,
-    2: AppColors.accentPurple,
-    3: AppColors.success,
-  };
-  final int index;
-
-  const _NivelBadgeSmall(this.index);
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _colors[index] ?? AppColors.textSecondary;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        'N$index',
-        style: AppTextStyles.label.copyWith(color: color),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-}

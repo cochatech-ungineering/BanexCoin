@@ -29,6 +29,8 @@ class DottedBackground extends StatelessWidget {
 class _DottedBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.isEmpty) return;
+
     final paint = Paint()
       ..color = const Color(0xFF3A3A4C).withValues(alpha: 0.3) // Subtle dots
       ..style = PaintingStyle.fill;

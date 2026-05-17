@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/presentation/atoms/dotted_background.dart';
 import '../../../../core/presentation/molecules/balance_header.dart';
-import '../../../../core/presentation/organisms/custom_bottom_nav_bar.dart';
 import '../../../../core/presentation/molecules/promo_banner_card.dart';
 import '../../../../core/presentation/molecules/quick_action_card.dart';
+import '../../../../core/presentation/organisms/custom_bottom_nav_bar.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,10 +33,7 @@ class HomeScreen extends StatelessWidget {
               icon: const Icon(Icons.headset_mic_outlined),
               onPressed: () {},
             ),
-            IconButton(
-              icon: const Icon(Icons.receipt_long),
-              onPressed: () {},
-            ),
+            IconButton(icon: const Icon(Icons.receipt_long), onPressed: () {}),
             IconButton(
               icon: const Icon(Icons.admin_panel_settings_outlined),
               tooltip: 'Vista Admin',
@@ -114,8 +111,10 @@ class HomeScreen extends StatelessWidget {
                   Text('Actividad reciente', style: AppTextStyles.heading2),
                   TextButton(
                     onPressed: () {},
-                    child:
-                        Text('Ver más →', style: AppTextStyles.bodySecondary),
+                    child: Text(
+                      'Ver más →',
+                      style: AppTextStyles.bodySecondary,
+                    ),
                   ),
                 ],
               ),
