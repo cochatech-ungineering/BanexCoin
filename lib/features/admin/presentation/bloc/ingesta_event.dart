@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../data/models/cashback_level.dart';
 import '../../data/services/export_service.dart';
+import '../../data/services/ingesta_api_client.dart';
 
 final class IngestaBanexTransferExportRequestedEvent extends IngestaEvent {
   const IngestaBanexTransferExportRequestedEvent();
@@ -23,6 +24,14 @@ final class IngestaExportRequestedEvent extends IngestaEvent {
   List<Object?> get props => [format];
 }
 
+final class IngestaFileKindChangedEvent extends IngestaEvent {
+  final IngestionFileKind kind;
+  const IngestaFileKindChangedEvent(this.kind);
+
+  @override
+  List<Object?> get props => [kind];
+}
+
 final class IngestaFilePickedEvent extends IngestaEvent {
   final PlatformFile file;
   const IngestaFilePickedEvent(this.file);
@@ -38,6 +47,10 @@ final class IngestaLevelChangedEvent extends IngestaEvent {
 
   @override
   List<Object?> get props => [index];
+}
+
+final class IngestaRefreshCashbackEvent extends IngestaEvent {
+  const IngestaRefreshCashbackEvent();
 }
 
 final class IngestaResetEvent extends IngestaEvent {

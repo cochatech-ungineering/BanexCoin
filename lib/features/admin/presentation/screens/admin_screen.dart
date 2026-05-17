@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,38 +7,67 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../bloc/ingesta_bloc.dart';
 import '../bloc/ingesta_event.dart';
 import '../bloc/ingesta_state.dart';
+import '../molecules/backend_info_banner.dart';
 import '../molecules/export_row.dart';
+import '../molecules/file_kind_selector.dart';
 import '../molecules/processing_overlay.dart';
+import '../organisms/ingestion_status_card.dart';
 import '../organisms/level_config_panel.dart';
 import '../organisms/results_table.dart';
 import '../organisms/upload_zone.dart';
 
-class AdminScreen extends StatefulWidget {
+class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 
   @override
-  State<AdminScreen> createState() => _AdminScreenState();
+  Widget build(BuildContext context) {
+    return const _AdminView();
+  }
 }
 
-class _AdminScreenState extends State<AdminScreen> {
-  static const _stages = [
-    (0.0, 'Leyendo archivo...'),
-    (0.20, 'Procesando transacciones...'),
-    (0.50, 'Calculando reintegros...'),
-    (0.80, 'Generando reporte...'),
-  ];
-
-  double _progress = 0.0;
-  String _stageLabel = '';
-  Timer? _animTimer;
+class _AdminView extends StatelessWidget {
+  const _AdminView();
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<IngestaBloc, IngestaState>(
+      listenWhen: (prev, curr) {
+        if (curr is IngestaFailure) {
+          return prev is! IngestaFailure || prev.message != curr.message;
+        }
+        if (curr is IngestaSuccess && curr.lastExportedFilename != null) {
+          return prev is! IngestaSuccess ||
+              prev.lastExportedFilename != curr.lastExportedFilename;
+        }
+        if (curr is IngestaAwaitingCashback && curr.statusMessage != null) {
+          return prev is! IngestaAwaitingCashback ||
+              prev.statusMessage != curr.statusMessage;
+        }
+        return false;
+      },
       listener: _onStateChange,
       builder: (context, state) {
-        final isProcessing = state is IngestaProcessing;
+        final isBusy = state is IngestaProcessing ||
+            (state is IngestaAwaitingCashback && state.loadingCashback);
         final isResults = state is IngestaSuccess;
+        final isAwaiting = state is IngestaAwaitingCashback;
+        final showUpload = !isResults;
+
+        final overlayProgress = switch (state) {
+          IngestaProcessing(:final progress) => progress,
+          IngestaAwaitingCashback(:final progress) => progress,
+          _ => 0.0,
+        };
+        final overlayLabel = switch (state) {
+          IngestaProcessing(:final stageLabel) => stageLabel,
+          IngestaAwaitingCashback(:final stageLabel) => stageLabel,
+          _ => '',
+        };
+        final overlayFileName = switch (state) {
+          IngestaProcessing(:final fileName) => fileName,
+          IngestaAwaitingCashback(:final fileName) => fileName,
+          _ => '',
+        };
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -53,7 +80,7 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
             title: Text('Ingesta de Datos', style: AppTextStyles.heading2),
             actions: [
-              if (isResults)
+              if (isResults || isAwaiting)
                 IconButton(
                   icon: const Icon(Icons.refresh_outlined),
                   tooltip: 'Nueva ingesta',
@@ -68,14 +95,28 @@ class _AdminScreenState extends State<AdminScreen> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (!isResults) ...[
+                      if (showUpload) ...[
                         Text(
-                          'Procesa reportes mensuales y calcula reintegros por nivel.',
+                          'Sube el reporte a AWS; el cashback se consulta desde Reports API',
                           style: AppTextStyles.bodySecondary,
+                        ),
+                        const SizedBox(height: 8),
+                        const BackendInfoBanner(),
+                        const SizedBox(height: 16),
+                        FileKindSelector(
+                          value: state.fileKind,
+                          onChanged: isBusy
+                              ? null
+                              : (kind) => context.read<IngestaBloc>().add(
+                                  IngestaFileKindChangedEvent(kind),
+                                ),
                         ),
                         const SizedBox(height: 20),
                         LevelConfigPanel(
@@ -84,33 +125,46 @@ class _AdminScreenState extends State<AdminScreen> {
                         ),
                         const SizedBox(height: 20),
                         UploadZone(
-                          onFilePicked: (file) => context.read<IngestaBloc>().add(
-                            IngestaFilePickedEvent(file),
-                          ),
-                          isDisabled: isProcessing,
+                          onFilePicked: (file) => context
+                              .read<IngestaBloc>()
+                              .add(IngestaFilePickedEvent(file)),
+                          isDisabled: isBusy,
                         ),
                       ],
-
-                      if (isProcessing) ...[
+                      if (isBusy) ...[
                         const SizedBox(height: 16),
                         ProcessingOverlay(
-                          progress: _progress,
-                          stageLabel: _stageLabel,
-                          fileName: state.fileName,
+                          progress: overlayProgress,
+                          stageLabel: overlayLabel,
+                          fileName: overlayFileName,
                         ),
                       ],
-
+                      if (isAwaiting) ...[
+                        const SizedBox(height: 16),
+                        IngestionStatusCard(
+                          ingestion: state.ingestion,
+                          loadingCashback: state.loadingCashback,
+                          onRefreshCashback: state.loadingCashback
+                              ? null
+                              : () => context.read<IngestaBloc>().add(
+                                  const IngestaRefreshCashbackEvent(),
+                                ),
+                        ),
+                      ],
                       if (isResults) ...[
-                        _buildSuccessBanner(state),
+                        _SuccessBanner(count: state.results.length),
                         const SizedBox(height: 20),
                         ExportRow(
                           results: state.results,
                           exportingFormat: state.exportingFormat,
+                          exportingBanexTransfer: state.exportingBanexTransfer,
                         ),
                         const SizedBox(height: 20),
-                        ResultsTable(results: state.results, period: state.month),
+                        ResultsTable(
+                          results: state.results,
+                          period: state.month,
+                        ),
                       ],
-
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -123,19 +177,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _animTimer?.cancel();
-    super.dispose();
-  }
-
   void _onStateChange(BuildContext context, IngestaState state) {
-    if (state is IngestaProcessing) {
-      _startAnimation();
-    } else {
-      _stopAnimation();
-    }
-
     if (state is IngestaFailure) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -143,6 +185,18 @@ class _AdminScreenState extends State<AdminScreen> {
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
+
+    if (state is IngestaAwaitingCashback && state.statusMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.statusMessage!),
+          backgroundColor: AppColors.surfaceHighlight,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 5),
         ),
       );
     }
@@ -176,8 +230,15 @@ class _AdminScreenState extends State<AdminScreen> {
       );
     }
   }
+}
 
-  Widget _buildSuccessBanner(IngestaSuccess state) {
+class _SuccessBanner extends StatelessWidget {
+  final int count;
+
+  const _SuccessBanner({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -191,7 +252,7 @@ class _AdminScreenState extends State<AdminScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              '${state.results.length} registros procesados',
+              '$count registros procesados',
               style: AppTextStyles.bodyPrimary.copyWith(
                 color: AppColors.success,
                 fontWeight: FontWeight.w500,
@@ -201,39 +262,5 @@ class _AdminScreenState extends State<AdminScreen> {
         ],
       ),
     );
-  }
-
-  void _startAnimation() {
-    _animTimer?.cancel();
-    _progress = 0.0;
-    _stageLabel = 'Leyendo archivo...';
-    const totalTicks = 70;
-    var tick = 0;
-
-    _animTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      tick++;
-      final progress = tick / totalTicks;
-      String label = _stages.last.$2;
-      for (final stage in _stages.reversed) {
-        if (progress >= stage.$1) {
-          label = stage.$2;
-          break;
-        }
-      }
-      setState(() {
-        _progress = progress.clamp(0.0, 1.0);
-        _stageLabel = label;
-      });
-      if (tick >= totalTicks) timer.cancel();
-    });
-  }
-
-  void _stopAnimation() {
-    _animTimer?.cancel();
-    _animTimer = null;
   }
 }
