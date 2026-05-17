@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class PromoBannerCard extends StatelessWidget {
-  const PromoBannerCard({Key? key}) : super(key: key);
+  const PromoBannerCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +23,7 @@ class PromoBannerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '¡Muy Pronto!',
-                  style: AppTextStyles.heading2,
-                ),
+                Text('¡Muy Pronto!', style: AppTextStyles.heading2),
                 const SizedBox(height: 12),
                 Text(
                   'Nuevas formas de pagar dentro y fuera del país, pago de servicios y mucho más!',

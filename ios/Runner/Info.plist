@@ -4,6 +4,16 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Necesario para seleccionar archivos de la librería de fotos</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Necesario para acceder a archivos de documentos</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Necesario para acceder a archivos del escritorio</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

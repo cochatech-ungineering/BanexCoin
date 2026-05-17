@@ -1,28 +1,16 @@
 import 'package:flutter/material.dart';
-import 'core/theme/app_theme.dart';
-import 'core/widgets/balance_header.dart';
-import 'core/widgets/promo_banner_card.dart';
-import 'core/widgets/quick_action_card.dart';
-import 'core/widgets/custom_bottom_nav_bar.dart';
+
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_text_styles.dart';
+import 'core/theme/app_theme.dart';
+import 'core/widgets/balance_header.dart';
+import 'core/widgets/custom_bottom_nav_bar.dart';
+import 'core/widgets/promo_banner_card.dart';
+import 'core/widgets/quick_action_card.dart';
+import 'features/admin/presentation/admin_screen.dart';
 
 void main() {
   runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BanexCoin',
-      theme: appTheme,
-      home: const HomeScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
 }
 
 class HomeScreen extends StatelessWidget {
@@ -48,6 +36,15 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.receipt_long),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings_outlined),
+            tooltip: 'Vista Admin',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AdminScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -137,6 +134,20 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
       extendBody: true, // Needed if bottom navbar has transparency
+    );
+  }
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BanexCoin',
+      theme: appTheme,
+      home: const HomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

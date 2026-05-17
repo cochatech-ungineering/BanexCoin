@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class BalanceHeader extends StatelessWidget {
   final String balance;
 
-  const BalanceHeader({Key? key, required this.balance}) : super(key: key);
+  const BalanceHeader({super.key, required this.balance});
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +23,17 @@ class BalanceHeader extends StatelessWidget {
                 color: AppColors.badgeBackground,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Text('USDT', style: TextStyle(fontSize: 12, color: Colors.white)),
+              child: const Text(
+                'USDT',
+                style: TextStyle(fontSize: 12, color: Colors.white),
+              ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.info_outline, color: AppColors.textSecondary, size: 16),
+            const Icon(
+              Icons.info_outline,
+              color: AppColors.textSecondary,
+              size: 16,
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -33,10 +41,7 @@ class BalanceHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              balance,
-              style: AppTextStyles.heading1.copyWith(fontSize: 40),
-            ),
+            Text(balance, style: AppTextStyles.heading1.copyWith(fontSize: 40)),
             ElevatedButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.add, size: 18),
@@ -49,7 +54,11 @@ class BalanceHeader extends StatelessWidget {
           children: [
             Text('Bs. ≈ 0.00', style: AppTextStyles.bodySecondary),
             const SizedBox(width: 8),
-            const Icon(Icons.visibility_off, color: AppColors.textSecondary, size: 16),
+            const Icon(
+              Icons.visibility_off,
+              color: AppColors.textSecondary,
+              size: 16,
+            ),
           ],
         ),
       ],

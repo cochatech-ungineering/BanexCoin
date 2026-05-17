@@ -1,4 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- file_picker: read external storage (API ≤ 32) and media files (API 33+) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
+        tools:ignore="SelectableTargetSdk" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"
+        tools:ignore="SelectableTargetSdk" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"
+        tools:ignore="SelectableTargetSdk" />
+
     <application
         android:label="banexcoin"
         android:name="${applicationName}"
@@ -40,6 +51,13 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- file_picker: required on Android 11+ to resolve document/file picker intents -->
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT" />
         </intent>
     </queries>
 </manifest>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -10,13 +11,13 @@ class QuickActionCard extends StatelessWidget {
   final String? ribbonText; // e.g., "Pronto"
 
   const QuickActionCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.onTap,
     this.isDisabled = false,
     this.ribbonText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +38,24 @@ class QuickActionCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Icon(
-                  icon, 
-                  color: isDisabled ? AppColors.textSecondary.withValues(alpha: 0.5) : AppColors.textPrimary,
+                  icon,
+                  color: isDisabled
+                      ? AppColors.textSecondary.withValues(alpha: 0.5)
+                      : AppColors.textPrimary,
                   size: 28,
                 ),
                 Text(
                   title,
                   style: AppTextStyles.label.copyWith(
-                    color: isDisabled ? AppColors.textSecondary.withValues(alpha: 0.5) : AppColors.textPrimary,
+                    color: isDisabled
+                        ? AppColors.textSecondary.withValues(alpha: 0.5)
+                        : AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Ribbon Implementation
           if (ribbonText != null)
             Positioned(
@@ -63,14 +68,17 @@ class QuickActionCard extends StatelessWidget {
                 ),
                 child: Container(
                   color: AppColors.accentPurple,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   // Note: A true angled ribbon would require a CustomPainter or Transform.rotate
                   child: Text(
                     ribbonText!,
                     style: const TextStyle(
-                      color: Colors.white, 
-                      fontSize: 10, 
-                      fontWeight: FontWeight.bold
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

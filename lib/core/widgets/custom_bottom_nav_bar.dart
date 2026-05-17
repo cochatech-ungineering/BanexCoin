@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
-  const CustomBottomNavBar({Key? key}) : super(key: key);
+  const CustomBottomNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class CustomBottomNavBar extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Floating Central Button ("Operar con QR")
           Positioned(
             top: -10, // Overlap the top
@@ -43,13 +44,16 @@ class CustomBottomNavBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
-                  onTap: () { /* QR Action */ },
+                  onTap: () {
+                    /* QR Action */
+                  },
                   child: Container(
                     width: 60,
                     height: 60,
                     decoration: const BoxDecoration(
                       gradient: AppColors.orangeGradient,
-                      shape: BoxShape.circle, // Note: Use a Hexagon CustomClipper for an exact match
+                      shape: BoxShape
+                          .circle, // Note: Use a Hexagon CustomClipper for an exact match
                     ),
                     child: const Icon(
                       Icons.qr_code_scanner,
@@ -62,13 +66,13 @@ class CustomBottomNavBar extends StatelessWidget {
                 Text(
                   'Operar con QR',
                   style: AppTextStyles.label.copyWith(
-                    color: AppColors.textSecondary, 
-                    fontSize: 11
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
