@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/admin/data/repositories/ingesta_repository_impl.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
 import '../../features/admin/presentation/bloc/ingesta_bloc.dart';
+import '../../features/cashback/presentation/screens/cashback_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 
 final appRouter = GoRouter(
@@ -18,6 +19,10 @@ final appRouter = GoRouter(
         create: (_) => IngestaBloc(const IngestaRepositoryImpl()),
         child: const AdminScreen(),
       ),
+    ),
+    GoRoute(
+      path: '/cashback',
+      builder: (context, state) => const CashbackScreen(),
     ),
   ],
 );

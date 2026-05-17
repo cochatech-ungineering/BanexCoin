@@ -16,7 +16,8 @@
       "mcp__dart-mcp-server__hot_restart",
       "mcp__dart-mcp-server__stop_app",
       "mcp__dart-mcp-server__get_runtime_errors",
-      "mcp__dart-mcp-server__get_widget_tree"
+      "mcp__dart-mcp-server__get_widget_tree",
+      "mcp__dart-mcp-server__analyze_files"
     ],
     "additionalDirectories": [
       "\\tmp"

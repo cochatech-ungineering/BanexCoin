@@ -71,11 +71,9 @@ class HomeScreen extends StatelessWidget {
                     childAspectRatio: 0.72,
                     children: [
                       QuickActionCard(
-                        title: 'Pago de\nServicio',
-                        icon: Icons.payments_outlined,
-                        onTap: () {},
-                        isDisabled: true,
-                        ribbonText: 'Pronto',
+                        title: 'CashBack',
+                        icon: Icons.percent_rounded,
+                        onTap: () => context.go('/cashback'),
                       ),
                       QuickActionCard(
                         title: 'Enviar a\nBilletera',
