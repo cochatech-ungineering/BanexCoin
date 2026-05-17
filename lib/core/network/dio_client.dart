@@ -1,18 +1,26 @@
+import 'package:banexcoin/core/config/app_config.dart';
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static const String _defaultBaseUrl = 'https://api-gateway.banexcoin.com';
+  static Dio ingestion() => _create(
+        AppConfig.ingestionBaseUrl,
+        receiveTimeout: AppConfig.uploadReceiveTimeout,
+      );
 
-  static Dio create({
-    String baseUrl = _defaultBaseUrl,
-    Duration connectTimeout = const Duration(seconds: 30),
-    Duration receiveTimeout = const Duration(seconds: 60),
-  }) => Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: connectTimeout,
-      receiveTimeout: receiveTimeout,
-      headers: const {'Accept': 'application/json'},
-    ),
-  );
+  static Dio reports() => _create(AppConfig.reportsBaseUrl);
+
+  static Dio _create(
+    String baseUrl, {
+    Duration receiveTimeout = AppConfig.receiveTimeout,
+  }) {
+    return Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: AppConfig.connectTimeout,
+        receiveTimeout: receiveTimeout,
+        headers: const {'Accept': 'application/json'},
+        validateStatus: (status) => status != null && status < 500,
+      ),
+    );
+  }
 }

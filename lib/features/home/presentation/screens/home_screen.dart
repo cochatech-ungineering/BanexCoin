@@ -8,6 +8,7 @@ import '../../../../core/presentation/molecules/quick_action_card.dart';
 import '../../../../core/presentation/organisms/custom_bottom_nav_bar.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../widgets/recent_cashback_section.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -116,11 +117,11 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Actividad reciente', style: AppTextStyles.heading3),
+                      Text('Cashback reciente', style: AppTextStyles.heading3),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () => context.go('/admin'),
                         child: Text(
-                          'Ver todo',
+                          'Admin →',
                           style: AppTextStyles.label.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -128,6 +129,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  const RecentCashbackSection(),
                   const SizedBox(height: 100),
                 ],
               ),
