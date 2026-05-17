@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/balance_header.dart';
-import '../../../core/widgets/custom_bottom_nav_bar.dart';
-import '../../../core/widgets/promo_banner_card.dart';
-import '../../../core/widgets/quick_action_card.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/presentation/molecules/balance_header.dart';
+import '../../../../core/presentation/organisms/custom_bottom_nav_bar.dart';
+import '../../../../core/presentation/molecules/promo_banner_card.dart';
+import '../../../../core/presentation/molecules/quick_action_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

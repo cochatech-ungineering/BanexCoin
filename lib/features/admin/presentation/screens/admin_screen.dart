@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import 'bloc/ingesta_bloc.dart';
-import 'bloc/ingesta_event.dart';
-import 'bloc/ingesta_state.dart';
-import 'widgets/export_row.dart';
-import 'widgets/level_config_panel.dart';
-import 'widgets/processing_overlay.dart';
-import 'widgets/results_table.dart';
-import 'widgets/upload_zone.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../bloc/ingesta_bloc.dart';
+import '../bloc/ingesta_event.dart';
+import '../bloc/ingesta_state.dart';
+import '../molecules/export_row.dart';
+import '../organisms/level_config_panel.dart';
+import '../molecules/processing_overlay.dart';
+import '../organisms/results_table.dart';
+import '../organisms/upload_zone.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});

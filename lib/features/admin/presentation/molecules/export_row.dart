@@ -104,10 +104,13 @@ class ExportRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Text(
-                '(pagos masivos USDT)',
-                style: AppTextStyles.label.copyWith(
-                  color: AppColors.textSecondary,
+              Expanded(
+                child: Text(
+                  '(pagos masivos USDT)',
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.textSecondary,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ],
