@@ -47,7 +47,7 @@ class IngestaResultsDataTable extends StatelessWidget {
             ),
             dataRowColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return AppColors.primaryOrange.withValues(alpha: 0.08);
+                return AppColors.primary.withValues(alpha: 0.08);
               }
               return AppColors.surface;
             }),
@@ -135,7 +135,7 @@ class IngestaResultsDataTable extends StatelessWidget {
           Text(
             '${(r.porcentajeReintegro * 100).toStringAsFixed(1)}%',
             style: AppTextStyles.bodyPrimary.copyWith(
-              color: AppColors.primaryOrange,
+              color: AppColors.primary,
             ),
           ),
         ),

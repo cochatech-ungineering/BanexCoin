@@ -8,8 +8,14 @@ import '../utils/ingesta_result_sort.dart';
 class ResultsTable extends StatefulWidget {
   final List<IngestaResult> results;
   final DateTime? period;
+  final int maxPreviewRows;
 
-  const ResultsTable({super.key, required this.results, this.period});
+  const ResultsTable({
+    super.key,
+    required this.results,
+    this.period,
+    this.maxPreviewRows = 5,
+  });
 
   @override
   State<ResultsTable> createState() => _ResultsTableState();
@@ -23,6 +29,11 @@ class _ResultsTableState extends State<ResultsTable> {
 
   @override
   Widget build(BuildContext context) {
+    final previewRows = _sorted.length > widget.maxPreviewRows
+        ? _sorted.sublist(0, widget.maxPreviewRows)
+        : _sorted;
+    final hasMore = _sorted.length > widget.maxPreviewRows;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,11 +43,24 @@ class _ResultsTableState extends State<ResultsTable> {
         ),
         const SizedBox(height: 14),
         IngestaResultsDataTable(
-          rows: _sorted,
+          rows: previewRows,
           sortColumnIndex: _sortColumnIndex,
           sortAscending: _sortAscending,
           onSort: _onSort,
         ),
+        if (hasMore)
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              'Vista previa: ${widget.maxPreviewRows} de ${_sorted.length} registros. '
+              'Descarga el archivo completo abajo.',
+              style: const TextStyle(
+                color: Color(0xFF8E8E9A),
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
       ],
     );
   }

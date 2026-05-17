@@ -30,7 +30,6 @@ class _AdminScreenState extends State<AdminScreen> {
     (0.80, 'Generando reporte...'),
   ];
 
-  // Local UI-only state: animation progress
   double _progress = 0.0;
   String _stageLabel = '';
   Timer? _animTimer;
@@ -49,26 +48,42 @@ class _AdminScreenState extends State<AdminScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red.shade800,
+              backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
         }
 
-        // Show export result snackbar when lastExportedFilename changes
         if (state is IngestaSuccess && state.lastExportedFilename != null) {
           final filename = state.lastExportedFilename!;
           final isError = filename.startsWith('ERROR:');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(isError ? filename : 'Exportado: $filename'),
-              backgroundColor: isError
-                  ? Colors.red.shade800
-                  : AppColors.surfaceHighlight,
+              content: Row(
+                children: [
+                  Icon(
+                    isError ? Icons.error_outline : Icons.check_circle_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isError ? filename : 'Guardado: $filename',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: isError ? AppColors.error : AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              duration: const Duration(seconds: 4),
             ),
           );
         }
@@ -86,7 +101,7 @@ class _AdminScreenState extends State<AdminScreen> {
               icon: const Icon(Icons.arrow_back_ios_new, size: 18),
               onPressed: () => context.go('/'),
             ),
-            title: Text('Vista Admin', style: AppTextStyles.heading2),
+            title: Text('Ingesta de Datos', style: AppTextStyles.heading2),
             actions: [
               if (isResults)
                 IconButton(
@@ -100,31 +115,29 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Ingesta de Datos', style: AppTextStyles.heading2),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Procesa reportes mensuales de transacciones QR y calcula reintegros',
-                    style: AppTextStyles.bodySecondary,
-                  ),
-                  const SizedBox(height: 24),
-
-                  LevelConfigPanel(
-                    levels: state.levels,
-                    tipoCambio: state.tipoCambio,
-                  ),
-                  const SizedBox(height: 24),
-
-                  if (!isResults)
+                  // --- PRE-INGESTA: Config + Upload ---
+                  if (!isResults) ...[
+                    Text(
+                      'Procesa reportes mensuales de transacciones QR y calcula reintegros por nivel.',
+                      style: AppTextStyles.bodySecondary,
+                    ),
+                    const SizedBox(height: 24),
+                    LevelConfigPanel(
+                      levels: state.levels,
+                      tipoCambio: state.tipoCambio,
+                    ),
+                    const SizedBox(height: 24),
                     UploadZone(
                       onFilePicked: (file) => context.read<IngestaBloc>().add(
                         IngestaFilePickedEvent(file),
                       ),
                       isDisabled: isProcessing,
                     ),
+                  ],
 
                   if (isProcessing) ...[
                     const SizedBox(height: 16),
@@ -135,14 +148,17 @@ class _AdminScreenState extends State<AdminScreen> {
                     ),
                   ],
 
+                  // --- POST-INGESTA: Export (prominent) + Preview table ---
                   if (isResults) ...[
-                    ResultsTable(results: state.results, period: state.month),
+                    _buildSuccessBanner(state),
                     const SizedBox(height: 20),
                     ExportRow(
                       results: state.results,
                       exportingFormat: state.exportingFormat,
                       exportingBanexTransfer: state.exportingBanexTransfer,
                     ),
+                    const SizedBox(height: 20),
+                    ResultsTable(results: state.results, period: state.month),
                   ],
 
                   const SizedBox(height: 40),
@@ -159,6 +175,42 @@ class _AdminScreenState extends State<AdminScreen> {
   void dispose() {
     _animTimer?.cancel();
     super.dispose();
+  }
+
+  Widget _buildSuccessBanner(IngestaSuccess state) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.success.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle, color: AppColors.success, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Procesamiento completado',
+                  style: AppTextStyles.heading3.copyWith(
+                    color: AppColors.success,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${state.results.length} registros procesados correctamente',
+                  style: AppTextStyles.bodySecondary,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _startAnimation() {

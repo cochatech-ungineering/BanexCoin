@@ -23,7 +23,7 @@ class ResultsTableHeader extends StatelessWidget {
       children: [
         ColoredBadge(
           label: '$userCount usuarios',
-          accentColor: AppColors.primaryOrange,
+          accentColor: AppColors.primary,
         ),
         const SizedBox(width: 10),
         if (period != null) ...[

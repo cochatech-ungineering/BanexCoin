@@ -1,41 +1,54 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Backgrounds
-  static const Color background = Color(0xFF101016); // Deep dark, less purple than before
-  static const Color surface = Color(0xFF1A1A24); // Card/Container background
-  static const Color surfaceHighlight = Color(
-    0xFF232330,
-  ); // Slightly lighter surface
+  // Backgrounds – from Banexcoin real app screenshots
+  static const Color background = Color(0xFF0A0A12);
+  static const Color surface = Color(0xFF161622);
+  static const Color surfaceHighlight = Color(0xFF1E1E2C);
 
   // Text
   static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(
-    0xFF92929D,
-  ); // Muted text for subtitles
+  static const Color textSecondary = Color(0xFF7B7B8E);
 
-  // Accents
-  static const Color primaryOrange = Color(0xFFFF8B53); // Softer brand color
-  static const Color primaryOrangeDark = Color(0xFFE56B3A);
-  static const Color accentPurple = Color(
-    0xFF4A3A7D,
-  ); // Softer, more elegant purple instead of neon
+  // Primary CTA – violet used for main buttons (like "Siguiente")
+  static const Color primary = Color(0xFF6C5CE7);
+  static const Color primaryDark = Color(0xFF5A4BD6);
+  static const Color primaryLight = Color(0xFF8B7DF0);
+
+  // Legacy aliases so existing code compiles without changes
+  static const Color primaryOrange = primary;
+  static const Color primaryOrangeDark = primaryDark;
+  static const Color accentPurple = primary;
+
+  // Accent – teal for secondary highlights
+  static const Color accentTeal = Color(0xFF00D2D3);
 
   // Specific elements
-  static const Color badgeBackground = Color(
-    0xFF252533,
-  ); // e.g., USDT badge background
-  static const Color borderColor = Color(0xFF282836); // Subtle borders on cards
+  static const Color badgeBackground = Color(0xFF1E1E2C);
+  static const Color borderColor = Color(0xFF252535);
 
-  // Status & Inputs
-  static const Color success = Color(0xFF27AE60); // Less neon green
-  static const Color error = Color(0xFFD94A3D);   // Less neon red
-  static const Color inputFill = Color(0xFF1E1E2A);
+  // Status
+  static const Color success = Color(0xFF00B894);
+  static const Color error = Color(0xFFE74C3C);
+  static const Color inputFill = Color(0xFF1A1A28);
+
+  // QR FAB – orange only for the hexagonal QR button (matches real app)
+  static const Color qrOrange = Color(0xFFFF8B53);
+  static const Color qrOrangeDark = Color(0xFFE56B3A);
 
   // Gradients
-  static const LinearGradient orangeGradient = LinearGradient(
-    colors: [Color(0xFFFFA070), Color(0xFFFF7A45)], // Softer orange gradient
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF7C6CF0), Color(0xFF5A4BD6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static const LinearGradient qrGradient = LinearGradient(
+    colors: [Color(0xFFFFA070), Color(0xFFFF7A45)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Legacy alias
+  static const LinearGradient orangeGradient = qrGradient;
 }

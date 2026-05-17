@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter build *)",
+      "Bash(flutter analyze *)",
+      "mcp__dart-mcp-server__list_devices",
+      "mcp__dart-mcp-server__launch_app",
+      "mcp__dart-mcp-server__connect_dart_tooling_daemon",
+      "Bash(adb exec-out *)",
+      "Bash(where adb.exe)",
+      "Read(//c/Users/**)",
+      "Bash(/c/Users/carlo/AppData/Local/Android/Sdk/platform-tools/adb.exe exec-out *)",
+      "Bash(/c/Users/carlo/AppData/Local/Android/Sdk/platform-tools/adb.exe shell *)",
+      "mcp__dart-mcp-server__hot_reload"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}

@@ -74,7 +74,7 @@ class _ConfigField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primaryOrange),
+          borderSide: const BorderSide(color: AppColors.primary),
         ),
       ),
     );
@@ -108,7 +108,7 @@ class _LevelConfigPanelState extends State<LevelConfigPanel> {
                   const Icon(
                     Icons.tune_outlined,
                     size: 18,
-                    color: AppColors.primaryOrange,
+                    color: AppColors.textPrimary,
                   ),
                   const SizedBox(width: 10),
                   Text(

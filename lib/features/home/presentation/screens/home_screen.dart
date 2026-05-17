@@ -24,19 +24,26 @@ class HomeScreen extends StatelessWidget {
             padding: EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: AppColors.surfaceHighlight,
-              child: Icon(Icons.person, color: AppColors.textPrimary),
+              child: Icon(
+                Icons.person_outline,
+                color: AppColors.textPrimary,
+                size: 20,
+              ),
             ),
           ),
           title: const Text('Inicio'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.headset_mic_outlined),
+              icon: const Icon(Icons.headset_mic_outlined, size: 22),
               onPressed: () {},
             ),
-            IconButton(icon: const Icon(Icons.receipt_long), onPressed: () {}),
             IconButton(
-              icon: const Icon(Icons.admin_panel_settings_outlined),
-              tooltip: 'Vista Admin',
+              icon: const Icon(Icons.receipt_long_outlined, size: 22),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.admin_panel_settings_outlined, size: 22),
+              tooltip: 'Ingesta Admin',
               onPressed: () => context.go('/admin'),
             ),
           ],
@@ -50,15 +57,15 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               const PromoBannerCard(),
               const SizedBox(height: 24),
-              Text('Acciones rápidas', style: AppTextStyles.heading2),
-              const SizedBox(height: 16),
+              Text('Acciones rápidas', style: AppTextStyles.heading3),
+              const SizedBox(height: 14),
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 4,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.75,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 0.72,
                 children: [
                   QuickActionCard(
                     title: 'Pago de\nServicio',
@@ -69,37 +76,37 @@ class HomeScreen extends StatelessWidget {
                   ),
                   QuickActionCard(
                     title: 'Enviar a\nBilletera',
-                    icon: Icons.upload_outlined,
+                    icon: Icons.north_east_rounded,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Comprar\nUSDT',
-                    icon: Icons.currency_exchange,
+                    icon: Icons.currency_exchange_outlined,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Pagar con\nQR',
-                    icon: Icons.qr_code_scanner,
+                    icon: Icons.qr_code_scanner_rounded,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Enviar\nBanex...',
-                    icon: Icons.send_to_mobile,
+                    icon: Icons.send_outlined,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Recibir de\nBilletera',
-                    icon: Icons.account_balance_wallet_outlined,
+                    icon: Icons.south_west_rounded,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Comprar con\nTarjeta',
-                    icon: Icons.credit_card,
+                    icon: Icons.credit_card_outlined,
                     onTap: () {},
                   ),
                   QuickActionCard(
                     title: 'Cobrar con\nQR',
-                    icon: Icons.qr_code,
+                    icon: Icons.qr_code_rounded,
                     onTap: () {},
                   ),
                 ],
@@ -108,12 +115,14 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Actividad reciente', style: AppTextStyles.heading2),
+                  Text('Actividad reciente', style: AppTextStyles.heading3),
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      'Ver más →',
-                      style: AppTextStyles.bodySecondary,
+                      'Ver todo',
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],
